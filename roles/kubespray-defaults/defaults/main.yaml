@@ -12,7 +12,7 @@ is_atomic: false
 disable_swap: true
 
 ## Change this to use another Kubernetes version, e.g. a current beta release
-kube_version: v1.13.1
+kube_version: v1.13.3
 
 ## Kube Proxy mode One of ['iptables','ipvs']
 kube_proxy_mode: ipvs
@@ -44,6 +44,9 @@ local_release_dir: "/tmp/releases"
 # Random shifts for retrying failed ops like pushing/downloading
 retry_stagger: 5
 
+# Install epel repo on Centos/RHEL
+epel_enabled: false
+
 # DNS configuration.
 # Kubernetes cluster name, also will be used as DNS domain
 cluster_name: cluster.local
@@ -54,6 +57,7 @@ dns_mode: coredns
 
 # Enable nodelocal dns cache
 enable_nodelocaldns: False
+nodelocaldns_ip: 169.254.25.10
 
 # Should be set to a cluster IP if using a custom cluster DNS
 # manual_dns_server: 10.x.x.x
@@ -152,6 +156,13 @@ kube_apiserver_port: 6443
 # http
 kube_apiserver_insecure_bind_address: 127.0.0.1
 kube_apiserver_insecure_port: 0
+
+# If non-empty, will use this string as identification instead of the actual hostname
+kube_override_hostname: >-
+  {%- if cloud_provider is defined and cloud_provider in [ 'aws' ] -%}
+  {%- else -%}
+  {{ inventory_hostname }}
+  {%- endif -%}
 
 # dynamic kubelet configuration
 dynamic_kubelet_configuration: false
